@@ -17,21 +17,26 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check YouTube live status
+        shell: bash
         run: |
           CHANNEL_URL="https://www.youtube.com/@CacVocEdmonton/live"
           HTML=$(curl -L -s "$CHANNEL_URL")
 
-         VIDEO_ID=$(echo "$HTML" | grep -o '"videoId":"[^"]*"' | head -1 | cut -d'"' -f4)
+          VIDEO_ID=$(echo "$HTML" | grep -o '"videoId":"[^"]*"' | head -1 | cut -d'"' -f4)
 
-         if echo "$HTML" | grep -q '"isLiveNow":true' && [ -n "$VIDEO_ID" ]; then
-         printf '{"isLive":true,"videoId":"%s"}\n' "$VIDEO_ID" > live.json
-         else
-         printf '{"isLive":false,"videoId":""}\n' > live.json
-         fi
+          if echo "$HTML" | grep -q '"isLiveNow":true' && [ -n "$VIDEO_ID" ]; then
+            printf '{"isLive":true,"videoId":"%s"}\n' "$VIDEO_ID" > live.json
+          else
+            printf '{"isLive":false,"videoId":""}\n' > live.json
+          fi
 
       - name: Save live status
         run: |
           git config user.name "github-actions[bot]"
+                    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add live.json
+          git diff --cached --quiet || git commit -m "Update live status"
+          git push
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add live.json
           git diff --cached --quiet || git commit -m "Update live status"
