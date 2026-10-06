@@ -23,11 +23,11 @@ jobs:
 
           VIDEO_ID=$(echo "$HTML" | grep -o '"videoId":"[^"]*"' | head -1 | cut -d'"' -f4)
 
-          if echo "$HTML" | grep -q '"isLiveNow":true' && [ -n "$VIDEO_ID" ]; then
-            echo "{\"isLive\": true, \"videoId\": \"$VIDEO_ID\"}" > live.json
-          else
-            echo "{\"isLive\": false, \"videoId\": \"\"}" > live.json
-          fi
+if echo "$HTML" | grep -q '"isLiveNow":true' && [ -n "$VIDEO_ID" ]; then
+  echo "{\"isLive\": true, \"videoId\": \"$VIDEO_ID\"}" > live.json
+else
+  echo "{\"isLive\": false, \"videoId\": \"\"}" > live.json
+fi
 
       - name: Save live status
         run: |
