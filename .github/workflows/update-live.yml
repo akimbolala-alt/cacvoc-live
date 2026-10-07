@@ -24,7 +24,7 @@ jobs:
 
           VIDEO_ID=$(echo "$HTML" | grep -o '"videoId":"[^"]*"' | head -1 | cut -d'"' -f4)
 
-          if true; then
+          if echo "$HTML" | grep -q '"isLiveNow":true' && [ -n "$VIDEO_ID" ]; then
           printf '{"isLive":true,"videoId":"EsDwc8oTcIo"}\n' > live.json
           else
           printf '{"isLive":false,"videoId":""}\n' > live.json
