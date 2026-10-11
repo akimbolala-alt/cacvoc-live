@@ -22,7 +22,7 @@ jobs:
           CHANNEL_URL="https://www.youtube.com/@CacVocEdmonton/live"
           HTML=$(curl -L -s -A "Mozilla/5.0" "$CHANNEL_URL")
 
-          VIDEO_ID=$(echo "$HTML" | grep -oE '"canonicalBaseUrl":"/watch\?v=[A-Za-z0-9_-]{11}"' | head -1 | cut -d'=' -f2 | tr -d '"')
+          VIDEO_ID=$(echo "$HTML" | grep -oE '"canonicalBaseUrl":"/watch\?v=[A-Za-z0-9_-]{11}"' | head -1 | cut -d'=' -f2 | tr -d '"' || true)
           echo "Detected video ID: $VIDEO_ID"
           echo "YouTube live flag: $(echo "$HTML" | grep -o '"isLiveNow":true' | head -1)"
           if echo "$HTML" | grep -q '"isLiveNow":true' && [ -n "$VIDEO_ID" ]; then
