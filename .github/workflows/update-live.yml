@@ -15,17 +15,25 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Install YouTube detection tool
+        run: python -m pip install --upgrade yt-dlp
 
       - name: Check YouTube live status
         shell: bash
         run: |
           CHANNEL_URL="https://www.youtube.com/@CacVocEdmonton/live"
-          HTML=$(curl -L -s -A "Mozilla/5.0" "$CHANNEL_URL")
 
-          VIDEO_ID=$(echo "$HTML" | grep -oE '"canonicalBaseUrl":"/watch\?v=[A-Za-z0-9_-]{11}"' | head -1 | cut -d'=' -f2 | tr -d '"' || true)
+          VIDEO_ID=$(yt-dlp --no-playlist --print id "$CHANNEL_URL" 2>/dev/null | head -1 || true)
+
+          LIVE_STATUS=""
+          if [ -n "$VIDEO_ID" ]; then
+            LIVE_STATUS=$(yt-dlp --print live_status "https://www.youtube.com/watch?v=$VIDEO_ID" 2>/dev/null | head -1 || true)
+          fi
+
           echo "Detected video ID: $VIDEO_ID"
-          echo "YouTube live flag: $(echo "$HTML" | grep -o '"isLiveNow":true' | head -1)"
-          if echo "$HTML" | grep -q '"isLiveNow":true' && [ -n "$VIDEO_ID" ]; then
+          echo "Live status: $LIVE_STATUS"
+
+          if [ "$LIVE_STATUS" = "is_live" ] && [ -n "$VIDEO_ID" ]; then
             printf '{"isLive":true,"videoId":"%s"}\n' "$VIDEO_ID" > live.json
           else
             printf '{"isLive":false,"videoId":""}\n' > live.json
