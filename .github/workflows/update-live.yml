@@ -22,7 +22,7 @@ jobs:
           CHANNEL_URL="https://www.youtube.com/@CacVocEdmonton/live"
           HTML=$(curl -L -s "$CHANNEL_URL")
 
-          VIDEO_ID=$(echo "$HTML" | grep -o '"videoId":"[^"]*"' | head -1 | cut -d'"' -f4)
+          VIDEO_ID=$(echo "$HTML" | grep -oE '"videoId":"[A-Za-z0-9_-]{11}"' | head -1 | cut -d'"' -f4)
 
           if echo "$HTML" | grep -q '"isLiveNow":true' && [ -n "$VIDEO_ID" ]; then
             printf '{"isLive":true,"videoId":"%s"}\n' "$VIDEO_ID" > live.json
