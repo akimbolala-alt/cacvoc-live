@@ -23,7 +23,7 @@ jobs:
         run: |
           CHANNEL_URL="https://www.youtube.com/@CacVocEdmonton/live"
 
-          VIDEO_ID=$(yt-dlp --no-playlist --print id "$CHANNEL_URL" 2>/dev/null | head -1 || true)
+          VIDEO_ID=$(yt-dlp --no-playlist --print id "$CHANNEL_URL" | head -1 || true)
 
           LIVE_STATUS=""
           if [ -n "$VIDEO_ID" ]; then
